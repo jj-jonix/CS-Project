@@ -13,7 +13,7 @@ from copy import deepcopy
 DETAILS = {
     'user': 'root',
     'host': 'localhost',
-    'password': '123456789'   #YOUR SQL PASSWORD
+    'password': '123456789'
 }
 
 ai_thread = None
@@ -170,26 +170,26 @@ class Main_menu:
         win.fill(BLACK)
         title = self.FONT2.render('Look up player data', 1, WHITE)
         subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return search_rect, back_rect
 
     def draw_add_data(self, win, input_text, input_active, status_text):
         win.fill(BLACK)
         title = self.FONT2.render('Add player data', 1, WHITE)
         subtitle = self.FONT3.render('Type the player name, then press Add.', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Add', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return action_rect, back_rect
 
     def draw_view_all_data(self, win, rows):
@@ -212,33 +212,33 @@ class Main_menu:
         win.fill(BLACK)
         title = self.FONT2.render('Delete player data', 1, WHITE)
         subtitle = self.FONT3.render('Type the player name, then press Delete.', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return action_rect, back_rect
     
     def draw_change_data(self, win, input_text, input_active, status_text):
         win.fill(BLACK)
         title = self.FONT2.render('Change player data', 1, WHITE)
         subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return search_rect, back_rect
     
     def draw_edit_player_stats(self, win, player_name, wins_text, losses_text, draws_text, wins_active, losses_active, draws_active, status_text):
         win.fill(BLACK)
         title = self.FONT2.render('Edit Player Stats', 1, WHITE)
         subtitle = self.FONT3.render(f'Player: {player_name}', 1, WHITE)
-        win.blit(title, (180, 80))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 80))
         win.blit(subtitle, (180, 140))
         wins_label = self.FONT3.render('Wins:', 1, WHITE)
         win.blit(wins_label, (180, 200))
@@ -249,10 +249,10 @@ class Main_menu:
         draws_label = self.FONT3.render('Draws:', 1, WHITE)
         win.blit(draws_label, (180, 340))
         draw_text_input_box(win, self.FONT3, draws_text, 350, 340, 100, 40, active=draws_active)
-        save_rect = self.draw_button(win, self.FONT3, 'Save', 250, 420, 100, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 370, 420, 100, 42)
+        save_rect = self.draw_button(win, self.FONT3, 'Save', 250, 470, 100, 42)
+        back_rect = self.draw_button(win, self.FONT3, 'Back', 370, 470, 100, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 480))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return save_rect, back_rect
     
     def draw_enter_players_name(self, win, player1_text, player2_text, status_text, active_player):
@@ -267,20 +267,20 @@ class Main_menu:
         draw_text_input_box(win, self.FONT3, player2_text, 350, 270, 200, 40, prompt='Player 2 name', active=active_player == 'player2')
         status = self.FONT3.render(status_text, 1, WHITE)
         win.blit(status, (180, 340))
-        start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 350, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 350, 120, 42)
+        start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 380, 150, 42)
+        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 380, 120, 42)
         return start_rect, back_rect
 
     def draw_delete_all_data(self, win,status_text):
         win.fill(BLACK)
         title = self.FONT2.render('Delete All Player Data', 1, WHITE)
         subtitle = self.FONT3.render('This will delete all player data. Are you sure?', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         action_rect = self.draw_button(win, self.FONT3, 'Delete All', 250, 240, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 240, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return action_rect, back_rect
     
     def draw_saved_games(self, win, rows):
@@ -291,8 +291,8 @@ class Main_menu:
         y = 180
         if rows:
             for row in rows:
-                text = self.FONT3.render(f"{row[2]} vs {row[3]} | {row[1]}",1,WHITE)
-                game_rect = self.draw_button(win,self.FONT3,f"{row[2]} vs {row[3]} | {row[1]}",180,y,text.get_width(),text.get_height())
+                text = self.FONT3.render(f"{row[0]}) {row[2]} vs {row[3]} | {row[1]}",1,WHITE)
+                game_rect = self.draw_button(win,self.FONT3,f"{row[0]}) {row[2]} vs {row[3]} | {row[1]}",180,y,text.get_width(),text.get_height())
                 buttons.append((game_rect,row[0]))
                 y += 30
         else:
@@ -304,24 +304,24 @@ class Main_menu:
         win.fill(BLACK)
         title = self.FONT2.render('Delete game data', 1, WHITE)
         subtitle = self.FONT3.render('Type the game id, then press Delete.', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='game id', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return action_rect, back_rect
     def draw_delete_all_game_data(self, win, status_text):
         win.fill(BLACK)
         title = self.FONT2.render('Delete All game Data', 1, WHITE)
         subtitle = self.FONT3.render('This will delete all game data. Are you sure?', 1, WHITE)
-        win.blit(title, (180, 120))
-        win.blit(subtitle, (180, 170))
+        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
+        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
         action_rect = self.draw_button(win, self.FONT3, 'Delete All', 250, 240, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 240, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 420))
+        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
         return action_rect, back_rect
     
 for piece in ['wP','wR','wN','wB','wQ','wK','bP','bR','bN','bB','bQ','bK']:
@@ -351,6 +351,7 @@ def draw_board(win):
         for col in range(DIMENTION):
             color = WHITE if (row+col)%2==0 else CHESSDOTCOM_GREEN
             pygame.draw.rect(win, color, pygame.Rect(col*SQUARE_SIZE+PADDING, row*SQUARE_SIZE+PADDING, SQUARE_SIZE, SQUARE_SIZE))
+
 
 def draw_pieces(win, board):
     for row in range(DIMENTION):
@@ -512,7 +513,7 @@ def main():
                         pos = event.pos
                         if current_window == 'view specific data':
                             if search_rect and search_rect.collidepoint(pos):
-                                name = text_input.strip()
+                                name = input_text.strip()
                                 result = store.fetch_user(name)
                                 if result and result[0]:
                                     row = result[0]
@@ -730,8 +731,6 @@ def main():
                         gamestate.undo_move()
                     move_made = True
                 
-
-        
         if move_made:
             valid_moves = gamestate.get_valid_moves()
             move_made = False

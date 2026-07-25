@@ -163,7 +163,7 @@ class Store:
         cursor.execute("""
             SELECT id, time, player1, player2
             FROM gamedata
-            ORDER BY id DESC
+            ORDER BY id ASC
         """)
         result = cursor.fetchall()
         con.close()
