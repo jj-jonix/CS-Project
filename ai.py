@@ -7,7 +7,7 @@ PHASE_TABLE = {'N':1,'B':1,'R':2,'Q':4,'-':0,'K':0,'P':0}
 HANGING_PIECE_PENALTY = {'P': 0.6,'N': 1.5,'B': 1.5,'R': 2.5,'Q': 5.0}
 CHECKMATE_SCORE = 1000
 STALEMATE_SCORE = 0
-DEPTH = 4
+DEPTH = 6
 MAX_PHASE = 24
 MAX_QUIESCENCE_DEPTH = 5
 ISOLATED_PAWN_PENALTY = 0.25
@@ -209,7 +209,7 @@ def call_negamax(gs, valid_moves):
     global next_move
     next_move = None
     best_move = None
-    # search_logger.debug(f"--- New search. white_to_move={gs.white_to_move}, material_count={gs.material_count} ---")
+    search_logger.debug(f"--- New search. white_to_move={gs.white_to_move}, material_count={gs.material_count} ---")
     score = 0
     turn_multiplier = 1 if gs.white_to_move else -1
     for current_depth in range(1, DEPTH + 1):
@@ -234,7 +234,7 @@ def call_negamax(gs, valid_moves):
                 if alpha <= -CHECKMATE_SCORE and beta >= CHECKMATE_SCORE:
                     score = negamax_alpha_beta(gs, valid_moves, current_depth, -CHECKMATE_SCORE, CHECKMATE_SCORE, turn_multiplier)
                     break
-        # search_logger.debug(f"Depth {current_depth} complete. score={score:.2f} best_move={next_move.get_chess_notation() if next_move else None}")
+        search_logger.debug(f"Depth {current_depth} complete. score={score:.2f} best_move={next_move.get_chess_notation() if next_move else None}")
         if next_move is not None:
             best_move = next_move
         else:
@@ -243,7 +243,7 @@ def call_negamax(gs, valid_moves):
             entry = TRANSPOSITION_TABLE.get(key)
             if entry and entry[3] is not None:
                 best_move = entry[3]
-    # search_logger.debug(f"Search finished. Final best_move={best_move.get_chess_notation() if best_move else 'NONE'}")
+    search_logger.debug(f"Search finished. Final best_move={best_move.get_chess_notation() if best_move else 'NONE'}")
     return best_move
  
 

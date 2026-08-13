@@ -24,10 +24,10 @@ pending_cpu_move = None
 
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Chess")
-def text_input(event, text, active, x, y, width, height):
+def text_input(event,text,active,x,y,width,height):
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = event.pos
-            input_rect = pygame.Rect(x, y, width, height)
+            input_rect = pygame.Rect(x,y,width, height)
             active = input_rect.collidepoint(pos)
         if event.type == pygame.KEYDOWN and active:
             if event.key == pygame.K_BACKSPACE:
@@ -46,18 +46,18 @@ class Main_menu:
     def __init__(self):
         pass
 
-    def draw_text_input_box(win, font, text, x, y, width, height, prompt='', active=False):
+    def draw_text_input_box(self, win, font, text, x, y, width, height, prompt='', active=False):
         input_rect = pygame.Rect(x, y, width, height)
         border_color = WHITE if active else GRAY 
         pygame.draw.rect(win, border_color, input_rect, 2)
         display_text = text if text else prompt
         text_color = WHITE if text else LIGHT_GRAY
         rendered_text = font.render(display_text, 1, text_color)
-        text_rect = rendered_text.get_rect(topleft=(x + 5, y + 5))
+        text_rect = rendered_text.get_rect(topleft=(x+5,y+5))
         win.blit(rendered_text, text_rect)
         if active:
-            cursor_x = text_rect.right + 2
-            pygame.draw.line(win, WHITE, (cursor_x, y + 5), (cursor_x, y + height - 5), 2)
+            cursor_x = text_rect.right+2
+            pygame.draw.line(win,WHITE,(cursor_x,y+5),(cursor_x,y+height-5), 2)
             
     def main_menu_text(self):
         self.chess_text = self.FONT1.render('CHESS!',1,WHITE,)
@@ -172,7 +172,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
+        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -185,7 +185,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the player name, then press Add.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
+        self.self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Add', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -214,7 +214,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the player name, then press Delete.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
+        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -227,7 +227,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
+        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
         search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -242,13 +242,13 @@ class Main_menu:
         win.blit(subtitle, (180, 140))
         wins_label = self.FONT3.render('Wins:', 1, WHITE)
         win.blit(wins_label, (180, 200))
-        draw_text_input_box(win, self.FONT3, wins_text, 350, 200, 100, 40, active=wins_active)
+        self.draw_text_input_box(win, self.FONT3, wins_text, 350, 200, 100, 40, active=wins_active)
         losses_label = self.FONT3.render('Losses:', 1, WHITE)
         win.blit(losses_label, (180, 270))
-        draw_text_input_box(win, self.FONT3, losses_text, 350, 270, 100, 40, active=losses_active)
+        self.draw_text_input_box(win, self.FONT3, losses_text, 350, 270, 100, 40, active=losses_active)
         draws_label = self.FONT3.render('Draws:', 1, WHITE)
         win.blit(draws_label, (180, 340))
-        draw_text_input_box(win, self.FONT3, draws_text, 350, 340, 100, 40, active=draws_active)
+        self.draw_text_input_box(win, self.FONT3, draws_text, 350, 340, 100, 40, active=draws_active)
         save_rect = self.draw_button(win, self.FONT3, 'Save', 250, 470, 100, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 370, 470, 100, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -261,10 +261,10 @@ class Main_menu:
         win.blit(title, (180, 120))       
         player1_label = self.FONT3.render('Player 1:', 1, WHITE)
         win.blit(player1_label, (180, 200))
-        draw_text_input_box(win, self.FONT3, player1_text, 350, 200, 200, 40, prompt='Player 1 name', active=active_player == 'player1')
+        self.draw_text_input_box(win, self.FONT3, player1_text, 350, 200, 200, 40, prompt='Player 1 name', active=active_player == 'player1')
         player2_label = self.FONT3.render('Player 2:', 1, WHITE)
         win.blit(player2_label, (180, 270))
-        draw_text_input_box(win, self.FONT3, player2_text, 350, 270, 200, 40, prompt='Player 2 name', active=active_player == 'player2')
+        self.draw_text_input_box(win, self.FONT3, player2_text, 350, 270, 200, 40, prompt='Player 2 name', active=active_player == 'player2')
         status = self.FONT3.render(status_text, 1, WHITE)
         win.blit(status, (180, 340))
         start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 380, 150, 42)
@@ -306,7 +306,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the game id, then press Delete.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='game id', active=input_active)
+        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='game id', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -364,13 +364,18 @@ def heighlight_square(win,gs,valid_moves,square_selected,move_log):
         row,col = square_selected
         if gs.board[row][col][0] == ('w' if gs.white_to_move else 'b'):
             s = pygame.Surface((SQUARE_SIZE,SQUARE_SIZE))
+            s2 = pygame.Surface((SQUARE_SIZE,SQUARE_SIZE))
+            s3 = pygame.Surface((SQUARE_SIZE,SQUARE_SIZE))
+            s2.fill(POPPY_RED)
             s.set_alpha(100)
             s.fill(BLUE)
             win.blit(s,(col*SQUARE_SIZE+PADDING, row*SQUARE_SIZE+PADDING))
-            s.fill(GRAY)
             for move in valid_moves:
-                if move.start_row == row and move.start_col == col:
-                    win.blit(s,(move.end_col*SQUARE_SIZE+PADDING, move.end_row*SQUARE_SIZE+PADDING))
+                if move.start_row == row and move.start_col == col and gs.board[move.end_row][move.end_col] == '--':
+                    pygame.draw.circle(WIN, LIGHT_GRAY, (move.end_col*SQUARE_SIZE+PADDING+SQUARE_SIZE//2, move.end_row*SQUARE_SIZE+PADDING+SQUARE_SIZE//2), 10)
+                    # win.blit(s,(move.end_col*SQUARE_SIZE+PADDING, move.end_row*SQUARE_SIZE+PADDING))
+                elif move.start_row == row and move.start_col == col:
+                    win.blit(s2,(move.end_col*SQUARE_SIZE+PADDING, move.end_row*SQUARE_SIZE+PADDING))
     if len(move_log) != 0:
         s = pygame.Surface((SQUARE_SIZE,SQUARE_SIZE))
         s.set_alpha(100)
@@ -378,8 +383,32 @@ def heighlight_square(win,gs,valid_moves,square_selected,move_log):
         move = move_log[-1]
         win.blit(s,(move.start_col*SQUARE_SIZE+PADDING, move.start_row*SQUARE_SIZE+PADDING))
         win.blit(s,(move.end_col*SQUARE_SIZE+PADDING, move.end_row*SQUARE_SIZE+PADDING))
-
-def draw_game_state(win, game_state, player1_name, player2_name,valid_moves,square_selected,loaded_save_id,store):
+def draw_win_screen(win,game_state, player1_name,player2_name,loaded_save_id,store):
+    if game_state.checkmate or game_state.stalemate or game_state.three_fold:
+            if game_state.white_to_move and game_state.checkmate:
+                winner_text = Main_menu.FONT1.render(f"{player2_name} WINS",1,WHITE)
+                store.update_win(player2_name,player1_name)
+            elif not game_state.white_to_move and game_state.checkmate:
+                winner_text = Main_menu.FONT1.render(f"{player1_name} WINS",1,WHITE)
+                store.update_win(player1_name,player2_name)
+            else:
+                winner_text = Main_menu.FONT1.render(f"DRAW",1,WHITE)
+                store.update_draw(player1_name,player2_name)
+            winner_text_rect = winner_text.get_rect(center = (WIN_WIDTH//2,WIN_HEIGHT//2))
+            s = pygame.Surface((winner_text.get_width()+50,winner_text.get_height()+50))
+            s.fill(BLACK)
+            win.blit(s,(WIN_WIDTH//2-s.get_width()//2,WIN_HEIGHT//2 - s.get_height()//2))
+            win.blit(winner_text,winner_text_rect)
+        
+            pygame.display.update()
+            if loaded_save_id != None:
+                store.delete_game(loaded_save_id)
+            time.sleep(5)
+            pygame.quit()
+            script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+            subprocess.run([sys.executable] + sys.argv, cwd=script_dir)
+            sys.exit(0)
+def draw_game_state(win,game_state,player1_name,player2_name,valid_moves,square_selected,loaded_save_id,store):
     win.fill(BLACK)
     player1_label = Main_menu.FONT3.render(player1_name, 1, WHITE)
     player2_label = Main_menu.FONT3.render(player2_name, 1, WHITE)
@@ -392,29 +421,7 @@ def draw_game_state(win, game_state, player1_name, player2_name,valid_moves,squa
     draw_pieces(win, game_state.board)
     draw_ingame_icons(win)
     if game_state.checkmate or game_state.stalemate or game_state.three_fold:
-        if game_state.white_to_move and game_state.checkmate:
-            winner_text = Main_menu.FONT1.render(f"{player2_name} WINS",1,WHITE)
-            store.update_win(player2_name,player1_name)
-        elif not game_state.white_to_move and game_state.checkmate:
-            winner_text = Main_menu.FONT1.render(f"{player1_name} WINS",1,WHITE)
-            store.update_win(player1_name,player2_name)
-        else:
-            winner_text = Main_menu.FONT1.render(f"DRAW",1,WHITE)
-            store.update_draw(player1_name,player2_name)
-        winner_text_rect = winner_text.get_rect(center = (WIN_WIDTH//2,WIN_HEIGHT//2))
-        s = pygame.Surface((winner_text.get_width()+50,winner_text.get_height()+50))
-        s.fill(BLACK)
-        win.blit(s,(WIN_WIDTH//2-s.get_width()//2,WIN_HEIGHT//2 - s.get_height()//2))
-        win.blit(winner_text,winner_text_rect)
-    
-        pygame.display.update()
-        if loaded_save_id != None:
-            store.delete_game(loaded_save_id)
-        time.sleep(5)
-        pygame.quit()
-        script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-        subprocess.run([sys.executable] + sys.argv, cwd=script_dir)
-        sys.exit(0)
+        draw_win_screen(win,game_state,player1_name,player2_name,loaded_save_id, store)
 def run_ai(gamestate, valid_moves):
     global pending_cpu_move
     # ai_logger.info(f"AI thread started. white_to_move={gamestate.white_to_move}, material_count={gamestate.material_count}")
