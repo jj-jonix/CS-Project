@@ -53,7 +53,7 @@ class Main_menu:
         display_text = text if text else prompt
         text_color = WHITE if text else LIGHT_GRAY
         rendered_text = font.render(display_text, 1, text_color)
-        text_rect = rendered_text.get_rect(topleft=(x+5,y+5))
+        text_rect = rendered_text.get_rect(topleft=(x+5,y+10))
         win.blit(rendered_text, text_rect)
         if active:
             cursor_x = text_rect.right+2
@@ -185,7 +185,7 @@ class Main_menu:
         subtitle = self.FONT3.render('Type the player name, then press Add.', 1, WHITE)
         win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
         win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
+        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
         action_rect = self.draw_button(win, self.FONT3, 'Add', 250, 340, 120, 42)
         back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
         status = self.FONT3.render(status_text, 1, WHITE)
@@ -259,16 +259,18 @@ class Main_menu:
         win.fill(BLACK)
         title = self.FONT2.render('Enter Player Names', 1, WHITE)
         win.blit(title, (180, 120))       
-        player1_label = self.FONT3.render('Player 1:', 1, WHITE)
+        player1_label = self.FONT3.render('White:', 1, WHITE)
         win.blit(player1_label, (180, 200))
-        self.draw_text_input_box(win, self.FONT3, player1_text, 350, 200, 200, 40, prompt='Player 1 name', active=active_player == 'player1')
-        player2_label = self.FONT3.render('Player 2:', 1, WHITE)
+        self.draw_text_input_box(win, self.FONT3, player1_text, 350, 200, 200, 40, prompt='White', active=active_player == 'player1')
+        player2_label = self.FONT3.render('Black', 1, WHITE)
         win.blit(player2_label, (180, 270))
-        self.draw_text_input_box(win, self.FONT3, player2_text, 350, 270, 200, 40, prompt='Player 2 name', active=active_player == 'player2')
+        self.draw_text_input_box(win, self.FONT3, player2_text, 350, 270, 200, 40, prompt='Black', active=active_player == 'player2')
         status = self.FONT3.render(status_text, 1, WHITE)
         win.blit(status, (180, 340))
-        start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 380, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 380, 120, 42)
+        status2 = self.FONT4.render('Enter cpu as one of the players to play against the AI',1,WHITE)
+        win.blit(status2, (190,380))
+        start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 420, 150, 42)
+        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 420, 120, 42)
         return start_rect, back_rect
 
     def draw_delete_all_data(self, win,status_text):

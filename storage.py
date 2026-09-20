@@ -151,7 +151,7 @@ class Store:
         con = self.connect()
         cursor = con.cursor()
         cursor.execute('use storage')
-        cursor.execute("insert into gamedata(time,player1,player2,gamestate) values(%s,%s,%s,%s )", (now.strftime("%d/%m/%y %H:%M"),player1,player2,game))
+        cursor.execute("insert into gamedata(time,player1,player2,gamestate) values(%s,%s,%s,%s )", (now.strftime("%d/%m/%y %H:%M:%S"),player1,player2,game))
         con.commit()
         con.close()
     
@@ -180,7 +180,7 @@ class Store:
             return pickle.loads(result[0])
         return None
     def delete_game(self, game_id):
-        self.setup_database()
+        self.setup_game_database()
         con = self.connect()
         cursor = con.cursor()
         cursor.execute("use storage")
@@ -195,7 +195,7 @@ class Store:
             con.close()
             return False
     def delete_all_games(self):
-        self.setup_game_database
+        self.setup_game_database()
         con = self.connect()
         cursor = con.cursor()
         cursor.execute("use storage")

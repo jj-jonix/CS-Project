@@ -334,7 +334,7 @@ def quiescence_search(gs,valid_moves,alpha,beta,turn_multiplier,quiescence_depth
     #extra layer on top of negamax when max deapth is reached to go further and search tactical moves like captures promotions and checks
     global next_move
     if gs.checkmate:
-        return -(CHECKMATE_SCORE - (DEPTH_RUNTIME - quiescence_depth))
+        return -(CHECKMATE_SCORE - (DEPTH_RUNTIME + quiescence_depth))
     if gs.stalemate or gs.three_fold:
         return STALEMATE_SCORE
     
