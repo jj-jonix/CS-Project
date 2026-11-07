@@ -1,79 +1,142 @@
 from globals import *
 
 class Main_menu:
-    FONT1 = pygame.font.SysFont('cinzel', 140)
-    FONT2 = pygame.font.SysFont('cinzel', 50)
-    FONT3 = pygame.font.SysFont('cinzel', 30)
-    FONT4 = pygame.font.SysFont('cinzel', 25)
+    FONT1 = pygame.font.SysFont('cinzel,georgia,times new roman', 96)
+    FONT2 = pygame.font.SysFont('cinzel,georgia,times new roman', 34)
+    FONT3 = pygame.font.SysFont('segoeui,helvetica,arial', 22)
+    FONT4 = pygame.font.SysFont('segoeui,helvetica,arial', 17)
+    BUTTON_FONT = pygame.font.SysFont('segoeui,helvetica,arial', 20, bold=True)
+
+    SINGLE_INPUT_RECT = pygame.Rect(152, 250, 496, 46)
+    STATS_INPUT_RECTS = [pygame.Rect(272, 226, 376, 44), pygame.Rect(272, 286, 376, 44), pygame.Rect(272, 346, 376, 44)]
+    PLAYER_INPUT_RECTS = [pygame.Rect(232, 230, 300, 46), pygame.Rect(232, 300, 300, 46)]
+    ROWS_PER_PAGE = 10
+    ROW_HEIGHT = 42
 
     def __init__(self):
-        self.play_text_rect = None
-        self.data_text_rect = None
-        self.modify_data_text_rect = None
-        self.exit_text_rect = None
-        self.load_game_text_rect = None
-        self.all_data_text_rect = None
-        self.specific_data_text_rect = None
-        self.back_text_rect = None
-        self.add_data_text_rect = None
-        self.delete_data_text_rect = None
-        self.change_data_text_rect = None
-        self.delete_all_data_text_rect = None
-        self.delete_game_data_text_rect = None
-        self.delete_all_game_data_text_rect = None
-        
+        empty = pygame.Rect(0, 0, 0, 0)
+        self.play_text_rect = self.data_text_rect = empty
+        self.modify_data_text_rect = empty
+        self.exit_text_rect = empty
+        self.load_game_text_rect = empty
+        self.all_data_text_rect = empty
+        self.specific_data_text_rect = empty
+        self.back_text_rect = empty
+        self.add_data_text_rect = empty
+        self.delete_data_text_rect = empty
+        self.change_data_text_rect = empty
+        self.delete_all_data_text_rect = empty
+        self.delete_game_data_text_rect = empty
+        self.delete_all_game_data_text_rect = empty
+        self.clickable = []
+        self.scroll = 0
+        self.hand_cursor = False
 
-    def draw_text_input_box(self, win, font, text, x, y, width, height, prompt='', active=False):
-        input_rect = pygame.Rect(x, y, width, height)
-        border_color = WHITE if active else GRAY 
-        pygame.draw.rect(win, border_color, input_rect, 2)
-        display_text = text if text else prompt
-        text_color = WHITE if text else LIGHT_GRAY
-        rendered_text = font.render(display_text, 1, text_color)
-        text_rect = rendered_text.get_rect(topleft=(x+5,y+10))
+    def update_cursor(self):
+        hovering = any(rect.collidepoint(pygame.mouse.get_pos()) for rect in self.clickable)
+        if hovering != self.hand_cursor:
+            self.hand_cursor = hovering
+            try:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND if hovering else pygame.SYSTEM_CURSOR_ARROW)
+            except pygame.error:
+                pass
+
+    def get_status_color(self, status_text):
+        if 'success' in status_text:
+            return GREEN
+        if '|' in status_text or 'Edit' in status_text:
+            return OFF_WHITE
+        return SOFT_RED
+
+    def draw_button(self, win, text, rect, style='normal'):
+        hovered = rect.collidepoint(pygame.mouse.get_pos())
+        if style == 'important':
+            color, text_color = (LIGHT_GREEN if hovered else GREEN), BACKGROUND
+        elif style == 'danger':
+            color, text_color = (DARK_RED if hovered else PANEL_LIGHT), SOFT_RED
+        elif style == 'muted':
+            color, text_color = (PANEL_LIGHT if hovered else None), (OFF_WHITE if hovered else MUTED_GRAY)
+        else:
+            color, text_color = (BORDER if hovered else PANEL_LIGHT), OFF_WHITE
+        if color:
+            pygame.draw.rect(win, color, rect, border_radius=6)
+        label = self.BUTTON_FONT.render(text, True, text_color)
+        win.blit(label, label.get_rect(center=rect.center))
+        self.clickable.append(rect)
+        return rect
+
+    def draw_text_input_box(self, win, text, rect, placeholder='', active=False):
+        pygame.draw.rect(win, BACKGROUND, rect, border_radius=6)
+        pygame.draw.rect(win, GREEN if active else BORDER, rect, 2 if active else 1, border_radius=6)
+        rendered_text = self.FONT3.render(text if text else placeholder, True, OFF_WHITE if text else MUTED_GRAY)
+        text_rect = rendered_text.get_rect(midleft=(rect.x + 14, rect.centery))
         win.blit(rendered_text, text_rect)
-        if active:
-            cursor_x = text_rect.right+2
-            pygame.draw.line(win,WHITE,(cursor_x,y+5),(cursor_x,y+height-5), 2)
-            
+        if active and (pygame.time.get_ticks() // 500) % 2 == 0:
+            cursor_x = text_rect.right + 2 if text else rect.x + 14
+            pygame.draw.line(win, OFF_WHITE, (cursor_x, rect.y + 11), (cursor_x, rect.bottom - 11), 2)
+
     def main_menu_text(self):
-        self.chess_text = self.FONT1.render('CHESS!',1,WHITE,)
-        self.chess_text_rect = self.chess_text.get_rect(center = (WIN_WIDTH//2,200))
-        self.play_text = self.FONT2.render('Play',1,WHITE)
-        self.play_text_rect = self.play_text.get_rect(center = (WIN_WIDTH//2,350))
-        self.data_text = self.FONT2.render('View Player Data',1,WHITE)
-        self.data_text_rect = self.data_text.get_rect(center = (WIN_WIDTH//2,430))
-        self.modify_data_text = self.FONT2.render('Modify Data',1,WHITE)
-        self.modify_data_text_rect = self.modify_data_text.get_rect(center = (WIN_WIDTH//2,510))
-        self.exit_text = self.FONT2.render('Exit',1,WHITE)
-        self.exit_text_rect = self.exit_text.get_rect(center = (WIN_WIDTH//2,670))
-        self.load_game_text = self.FONT2.render('Load Saved Game',1,WHITE)
-        self.load_game_text_rect = self.load_game_text.get_rect(center=(WIN_WIDTH//2,590))
-        return [(self.chess_text,self.chess_text_rect),(self.play_text,self.play_text_rect),(self.data_text,self.data_text_rect),
-                (self.modify_data_text,self.modify_data_text_rect),(self.exit_text,self.exit_text_rect),(self.load_game_text,self.load_game_text_rect)]
-    
-    def draw_main_menu(self,win,options):
-        win.fill(BLACK)
-        for text in options:
-            win.blit(text[0],text[1])
+        middle = WIN_WIDTH // 2
+        self.play_text_rect = pygame.Rect(middle - 170, 300, 340, 52)
+        self.load_game_text_rect = pygame.Rect(middle - 170, 364, 340, 52)
+        self.data_text_rect = pygame.Rect(middle - 170, 428, 340, 52)
+        self.modify_data_text_rect = pygame.Rect(middle - 170, 492, 340, 52)
+        self.exit_text_rect = pygame.Rect(middle - 170, 572, 340, 52)
+        return [('Play', self.play_text_rect, 'important'), ('Load saved game', self.load_game_text_rect, 'normal'),
+                ('Player stats', self.data_text_rect, 'normal'), ('Manage data', self.modify_data_text_rect, 'normal'),
+                ('Exit', self.exit_text_rect, 'muted')]
+
+    def view_data_select(self):
+        middle = WIN_WIDTH // 2
+        self.all_data_text_rect = pygame.Rect(middle - 170, 260, 340, 52)
+        self.specific_data_text_rect = pygame.Rect(middle - 170, 324, 340, 52)
+        self.back_text_rect = pygame.Rect(middle - 170, 408, 340, 52)
+        return [('View all players', self.all_data_text_rect, 'normal'),
+                ('Look up a player', self.specific_data_text_rect, 'normal'),
+                ('Back', self.back_text_rect, 'muted')]
+
+    def modify_data_select(self):
+        middle = WIN_WIDTH // 2
+        self.add_data_text_rect = pygame.Rect(middle - 170, 250, 340, 46)
+        self.change_data_text_rect = pygame.Rect(middle - 170, 306, 340, 46)
+        self.delete_data_text_rect = pygame.Rect(middle - 170, 362, 340, 46)
+        self.delete_game_data_text_rect = pygame.Rect(middle - 170, 434, 340, 46)
+        self.delete_all_data_text_rect = pygame.Rect(middle - 170, 506, 340, 46)
+        self.delete_all_game_data_text_rect = pygame.Rect(middle - 170, 562, 340, 46)
+        self.back_text_rect = pygame.Rect(middle - 170, 634, 340, 46)
+        return [('Add player', self.add_data_text_rect, 'normal'), ('Edit player', self.change_data_text_rect, 'normal'),
+                ('Delete player', self.delete_data_text_rect, 'normal'),('Delete saved game', self.delete_game_data_text_rect, 'normal'),
+                ('Delete all players', self.delete_all_data_text_rect, 'danger'),('Delete all saved games', self.delete_all_game_data_text_rect, 'danger'),
+                ('Back', self.back_text_rect, 'muted')]
+
+    def draw_menu(self, win, options, title, big=False):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        if big:
+            title_text = self.FONT1.render(title, True, OFF_WHITE)
+            win.blit(title_text, title_text.get_rect(center=(WIN_WIDTH // 2, 170)))
+            pygame.draw.rect(win, GREEN, (WIN_WIDTH // 2 - 24, 232, 48, 3))
+        else:
+            title_text = self.FONT2.render(title, True, OFF_WHITE)
+            win.blit(title_text, title_text.get_rect(center=(WIN_WIDTH // 2, 190)))
+        for label, rect, style in options:
+            self.draw_button(win, label, rect, style)
 
     def clicks(self, event, cur):
-        if event.type != pygame.MOUSEBUTTONDOWN:
+        if event.type != pygame.MOUSEBUTTONDOWN or event.button != 1:
             return cur
-
         pos = event.pos
-
         if cur == 'main menu':
             if self.play_text_rect.collidepoint(pos):
                 return 'play'
+            elif self.load_game_text_rect.collidepoint(pos):
+                return 'load game'
             elif self.data_text_rect.collidepoint(pos):
                 return 'data menu'
             elif self.modify_data_text_rect.collidepoint(pos):
                 return 'modify data'
             elif self.exit_text_rect.collidepoint(pos):
                 return 'exit'
-            elif self.load_game_text_rect.collidepoint(pos):
-                return 'load game'
         elif cur == 'data menu':
             if self.all_data_text_rect.collidepoint(pos):
                 return 'view all data'
@@ -84,259 +147,230 @@ class Main_menu:
         elif cur == 'modify data':
             if self.add_data_text_rect.collidepoint(pos):
                 return 'add data'
-            elif self.delete_data_text_rect.collidepoint(pos):
-                return 'delete data'
             elif self.change_data_text_rect.collidepoint(pos):
                 return 'change data'
-            elif self.back_text_rect.collidepoint(pos):
-                return 'main menu'
-            elif self.delete_all_data_text_rect.collidepoint(pos):
-                return 'delete all data'
+            elif self.delete_data_text_rect.collidepoint(pos):
+                return 'delete data'
             elif self.delete_game_data_text_rect.collidepoint(pos):
                 return 'delete game data'
+            elif self.delete_all_data_text_rect.collidepoint(pos):
+                return 'delete all data'
             elif self.delete_all_game_data_text_rect.collidepoint(pos):
                 return 'delete all game data'
+            elif self.back_text_rect.collidepoint(pos):
+                return 'main menu'
         return cur
-    def set_cursor(self, cur, mouse_pos):
-        rects = []
-        if cur == 'main menu':
-            rects = [self.play_text_rect, self.data_text_rect, self.modify_data_text_rect,
-                      self.exit_text_rect, self.load_game_text_rect]
-        elif cur == 'data menu':
-            rects = [self.all_data_text_rect, self.specific_data_text_rect, self.back_text_rect]
-        elif cur == 'modify data':
-            rects = [self.add_data_text_rect, self.delete_data_text_rect, self.change_data_text_rect,
-                      self.back_text_rect, self.delete_all_data_text_rect, self.delete_game_data_text_rect,
-                      self.delete_all_game_data_text_rect]
-        hover = any(r and r.collidepoint(mouse_pos) for r in rects)
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND if hover else pygame.SYSTEM_CURSOR_ARROW)
-    def view_data_select(self):
-        all_data_text = self.FONT2.render('View All Player Data',1,WHITE)
-        self.all_data_text_rect = all_data_text.get_rect(center = (WIN_WIDTH//2,350))
-        specific_data_text = self.FONT2.render('View Specific Player Data',1,WHITE)
-        self.specific_data_text_rect = specific_data_text.get_rect(center = (WIN_WIDTH//2,430))
-        back_text = self.FONT2.render('Back',1,WHITE)
-        self.back_text_rect = back_text.get_rect(center = (WIN_WIDTH//2,510))
-        return [(all_data_text,self.all_data_text_rect),(specific_data_text,self.specific_data_text_rect),(back_text,self.back_text_rect)]
 
-
-    def modify_data_select(self):
-        add_data_text = self.FONT2.render('Add Player Data',1,WHITE)
-        self.add_data_text_rect = add_data_text.get_rect(center = (WIN_WIDTH//2,250))
-        delete_data_text = self.FONT2.render('Delete Player Data',1,WHITE)
-        self.delete_data_text_rect = delete_data_text.get_rect(center = (WIN_WIDTH//2,320))
-        change_data_text = self.FONT2.render('Change Player Data',1,WHITE)
-        self.change_data_text_rect = change_data_text.get_rect(center = (WIN_WIDTH//2,390))
-        back_text = self.FONT2.render('Back',1,WHITE)
-        self.back_text_rect = back_text.get_rect(center = (WIN_WIDTH//2,680))
-        self.delete_all_data_text = self.FONT2.render('Delete All Player Data',1,WHITE)
-        self.delete_all_data_text_rect = self.delete_all_data_text.get_rect(center = (WIN_WIDTH//2,460))
-        self.delete_game_data_text = self.FONT2.render('Delete Game Data',1,WHITE)
-        self.delete_game_data_text_rect = self.delete_game_data_text.get_rect(center = (WIN_WIDTH//2,530))
-        self.delete_all_game_data_text = self.FONT2.render('Delete All Game Data',1,WHITE)
-        self.delete_all_game_data_text_rect = self.delete_all_game_data_text.get_rect(center = (WIN_WIDTH//2, 600))
-        return [(add_data_text,self.add_data_text_rect),(delete_data_text,self.delete_data_text_rect),
-        (change_data_text,self.change_data_text_rect),(back_text,self.back_text_rect),(self.delete_all_data_text,self.delete_all_data_text_rect),
-        (self.delete_game_data_text,self.delete_game_data_text_rect),(self.delete_all_game_data_text,self.delete_all_game_data_text_rect)]
-        
-    def draw_view_data(self,win):
-        win.fill(BLACK)
-        for text in self.view_data_select():
-            win.blit(text[0],text[1])
-
-    def draw_modify_data(self,win):
-        win.fill(BLACK)
-        for text in self.modify_data_select():
-            win.blit(text[0],text[1])
-
-    def draw_button(self, win, font, text, x, y, width, height, color=None):
-        label = font.render(text, 1, color if color else WHITE )
-        rect = label.get_rect(center=(x + width // 2, y + height // 2))
-        win.blit(label, rect)
-        return rect
-
-    def draw_view_specific_data(self, win, input_text, input_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Look up player data', 1, WHITE)
-        subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
-        search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
+    def draw_view_specific_data(self, win, input_text, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 330)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Look up a player', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Find a player by name.', True, MUTED_GRAY), (152, 186))
+        self.draw_text_input_box(win, input_text, self.SINGLE_INPUT_RECT, 'Player name', True)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 312))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 364, 110, 44), 'muted')
+        search_rect = self.draw_button(win, 'Search', pygame.Rect(498, 364, 150, 44), 'important')
         return search_rect, back_rect
 
-    def draw_add_data(self, win, input_text, input_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Add player data', 1, WHITE)
-        subtitle = self.FONT3.render('Type the player name, then press Add.', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='New player name', active=input_active)
-        action_rect = self.draw_button(win, self.FONT3, 'Add', 250, 340, 120, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
+    def draw_add_data(self, win, input_text, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 330)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Add player', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Create a player with a 0-0-0 record.', True, MUTED_GRAY), (152, 186))
+        self.draw_text_input_box(win, input_text, self.SINGLE_INPUT_RECT, 'New player name', True)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 312))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 364, 110, 44), 'muted')
+        action_rect = self.draw_button(win, 'Add', pygame.Rect(498, 364, 150, 44), 'important')
         return action_rect, back_rect
+
+    def draw_delete_data(self, win, input_text, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 330)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Delete player', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Removes the player and their record.', True, MUTED_GRAY), (152, 186))
+        self.draw_text_input_box(win, input_text, self.SINGLE_INPUT_RECT, 'Player name', True)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 312))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 364, 110, 44), 'muted')
+        action_rect = self.draw_button(win, 'Delete', pygame.Rect(498, 364, 150, 44), 'danger')
+        return action_rect, back_rect
+
+    def draw_change_data(self, win, input_text, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 330)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Edit player', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Find the player whose record you want to change.', True, MUTED_GRAY), (152, 186))
+        self.draw_text_input_box(win, input_text, self.SINGLE_INPUT_RECT, 'Player name', True)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 312))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 364, 110, 44), 'muted')
+        search_rect = self.draw_button(win, 'Search', pygame.Rect(498, 364, 150, 44), 'important')
+        return search_rect, back_rect
+
+    def draw_delete_game_data(self, win, input_text, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 330)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Delete saved game', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Use the number shown in Load Saved Game.', True, MUTED_GRAY), (152, 186))
+        self.draw_text_input_box(win, input_text, self.SINGLE_INPUT_RECT, 'Game number', True)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 312))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 364, 110, 44), 'muted')
+        action_rect = self.draw_button(win, 'Delete', pygame.Rect(498, 364, 150, 44), 'danger')
+        return action_rect, back_rect
+
+    def draw_delete_all_data(self, win, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 290)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Delete all players', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('This permanently deletes every player record.', True, MUTED_GRAY), (152, 186))
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 250))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 310, 110, 44), 'muted')
+        action_rect = self.draw_button(win, 'Delete all', pygame.Rect(498, 310, 150, 44), 'danger')
+        return action_rect, back_rect
+
+    def draw_delete_all_game_data(self, win, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 290)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Delete all saved games', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('This permanently deletes every saved game.', True, MUTED_GRAY), (152, 186))
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 250))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 310, 110, 44), 'muted')
+        action_rect = self.draw_button(win, 'Delete all', pygame.Rect(498, 310, 150, 44), 'danger')
+        return action_rect, back_rect
+
+    def draw_edit_player_stats(self, win, player_name, stats_text, focused_field, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 420)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Edit player', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render(player_name, True, MUTED_GRAY), (152, 186))
+        labels = ['Wins', 'Losses', 'Draws']
+        for i in range(3):
+            label = self.FONT3.render(labels[i], True, MUTED_GRAY)
+            win.blit(label, label.get_rect(midleft=(152, self.STATS_INPUT_RECTS[i].centery)))
+            self.draw_text_input_box(win, stats_text[i], self.STATS_INPUT_RECTS[i], '0', focused_field == i)
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 410))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 452, 110, 44), 'muted')
+        save_rect = self.draw_button(win, 'Save', pygame.Rect(528, 452, 120, 44), 'important')
+        return save_rect, back_rect
+
+    def draw_enter_players_name(self, win, player_names, focused_field, status_text):
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 110, 560, 400)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('New game', True, OFF_WHITE), (152, 138))
+        win.blit(self.FONT4.render('Enter a name for each side, or pick a CPU level.', True, MUTED_GRAY), (152, 186))
+        labels = ['White', 'Black']
+        cpu_rects = []
+        for i in range(2):
+            input_rect = self.PLAYER_INPUT_RECTS[i]
+            label = self.FONT3.render(labels[i], True, MUTED_GRAY)
+            win.blit(label, label.get_rect(midleft=(152, input_rect.centery)))
+            self.draw_text_input_box(win, player_names[i], input_rect, 'Player name', focused_field == i)
+            name = player_names[i].strip().lower()
+            if name.startswith('cpu'):
+                cpu_button = self.draw_button(win, ('CPU ' + name[3:]).strip(), pygame.Rect(input_rect.right + 16, input_rect.y, 100, input_rect.height), 'important')
+            else:
+                cpu_button = self.draw_button(win, 'Human', pygame.Rect(input_rect.right + 16, input_rect.y, 100, input_rect.height), 'normal')
+            cpu_rects.append(cpu_button)
+        win.blit(self.FONT4.render('Click Human / CPU to cycle levels. Higher levels think longer.', True, MUTED_GRAY), (152, 356))
+        win.blit(self.FONT3.render(status_text, True, self.get_status_color(status_text)), (152, 388))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 436, 110, 44), 'muted')
+        start_rect = self.draw_button(win, 'Start game', pygame.Rect(488, 436, 160, 44), 'important')
+        return start_rect, back_rect, cpu_rects[0], cpu_rects[1]
 
     def draw_view_all_data(self, win, rows):
-        win.fill(BLACK)
-        title = self.FONT2.render('All player data', 1, WHITE)
-        win.blit(title, (180, 120))
-        y = 180
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 90, 560, 640)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('All players', True, OFF_WHITE), (152, 118))
+        self.scroll = min(self.scroll, max(0, len(rows) - self.ROWS_PER_PAGE))
+        first = self.scroll
+        last = min(len(rows), first + self.ROWS_PER_PAGE)
         if rows:
-            for row in rows:
-                line = self.FONT3.render(f"{row[0]} | Wins: {row[1]} | Losses: {row[2]} | Draws: {row[3]}", 1, WHITE)
-                win.blit(line, (180, y))
-                y += 30
+            win.blit(self.FONT4.render(f'{len(rows)} registered', True, MUTED_GRAY), (152, 166))
+            win.blit(self.FONT4.render('NAME', True, MUTED_GRAY), (152, 208))
+            for text, right_edge in (('WINS', 500), ('LOSSES', 574), ('DRAWS', 648)):
+                header = self.FONT4.render(text, True, MUTED_GRAY)
+                win.blit(header, header.get_rect(topright=(right_edge, 208)))
+            y = 236
+            for row in rows[first:last]:
+                middle_y = y + self.ROW_HEIGHT // 2
+                name = self.FONT3.render(str(row[0]), True, OFF_WHITE)
+                win.blit(name, name.get_rect(midleft=(152, middle_y)))
+                for value, right_edge in ((row[1], 500), (row[2], 574), (row[3], 648)):
+                    number = self.FONT3.render(str(value), True, OFF_WHITE)
+                    win.blit(number, number.get_rect(midright=(right_edge, middle_y)))
+                pygame.draw.line(win, BORDER, (152, y + self.ROW_HEIGHT - 1), (648, y + self.ROW_HEIGHT - 1))
+                y += self.ROW_HEIGHT
         else:
-            msg = self.FONT3.render('No player data available.', 1, WHITE)
-            win.blit(msg, (180, 180))
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 300, 520, 120, 42)
+            message ='No players yet.'
+            text = self.FONT3.render(message, True, MUTED_GRAY)
+            win.blit(text, text.get_rect(center=(box.centerx, 340)))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 668, 110, 44), 'muted')
+        if len(rows) > self.ROWS_PER_PAGE:
+            info = self.FONT4.render(f'{first + 1}-{last} of {len(rows)}  -  scroll for more', True, MUTED_GRAY)
+            win.blit(info, info.get_rect(midright=(648, back_rect.centery)))
         return back_rect
-    
-    def draw_delete_data(self, win, input_text, input_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Delete player data', 1, WHITE)
-        subtitle = self.FONT3.render('Type the player name, then press Delete.', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
-        action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return action_rect, back_rect
-    
-    def draw_change_data(self, win, input_text, input_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Change player data', 1, WHITE)
-        subtitle = self.FONT3.render('Type the player name, then press Search.', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='Player name', active=input_active)
-        search_rect = self.draw_button(win, self.FONT3, 'Search', 250, 340, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 340, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return search_rect, back_rect
-    
-    def draw_edit_player_stats(self, win, player_name, wins_text, losses_text, draws_text, wins_active, losses_active, draws_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Edit Player Stats', 1, WHITE)
-        subtitle = self.FONT3.render(f'Player: {player_name}', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 80))
-        win.blit(subtitle, (180, 140))
-        wins_label = self.FONT3.render('Wins:', 1, WHITE)
-        win.blit(wins_label, (180, 200))
-        self.draw_text_input_box(win, self.FONT3, wins_text, 350, 200, 100, 40, active=wins_active)
-        losses_label = self.FONT3.render('Losses:', 1, WHITE)
-        win.blit(losses_label, (180, 270))
-        self.draw_text_input_box(win, self.FONT3, losses_text, 350, 270, 100, 40, active=losses_active)
-        draws_label = self.FONT3.render('Draws:', 1, WHITE)
-        win.blit(draws_label, (180, 340))
-        self.draw_text_input_box(win, self.FONT3, draws_text, 350, 340, 100, 40, active=draws_active)
-        save_rect = self.draw_button(win, self.FONT3, 'Save', 250, 470, 100, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 370, 470, 100, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return save_rect, back_rect
-    
-    def draw_enter_players_name(self, win, player1_text, player2_text, status_text, active_player, info_active = False):
-        win.fill(BLACK)
-        title = self.FONT2.render('Enter Player Names', 1, WHITE)
-        win.blit(title, (180, 120))       
-        player1_label = self.FONT3.render('White:', 1, WHITE)
-        win.blit(player1_label, (180, 200))
-        self.draw_text_input_box(win, self.FONT3, player1_text, 350, 190, 200, 40, prompt='White', active=active_player == 'player1')
-        player2_label = self.FONT3.render('Black:', 1, WHITE)
-        win.blit(player2_label, (180, 270))
-        self.draw_text_input_box(win, self.FONT3, player2_text, 350, 260, 200, 40, prompt='Black', active=active_player == 'player2')
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (180, 340))
-        start_rect = self.draw_button(win, self.FONT3, 'Start Game', 250, 380, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 380, 120, 42)
-        info_rect = self.draw_button(win,self.FONT1, '?', WIN_WIDTH-140, WIN_HEIGHT-140, 150,150)
-        if info_active:
-            lines = [
-                "Enter one of the player names as cpu to play against the AI.",
-                "Put a number after cpu to select the difficulty.",
-                "For example, cpu1, cpu2, etc.",
-                "",
-                "",
-                "Every difficulty level increases the time taken to make moves.",
-                "Max reccomended difficulty is 6"
-            ]
-            info_texts = [self.FONT3.render(line, 1, WHITE) for line in lines]
-            text_width = max(text.get_width() for text in info_texts)
-            line_height = self.FONT3.get_height()
-            text_height = line_height * 6
-            bg_blurr = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
-            bg_blurr.set_alpha(200)
-            bg_blurr.fill(BLACK)
-            win.blit(bg_blurr, (0, 0))  
-            info_box = pygame.Rect(WIN_WIDTH//2-text_width//2-50, WIN_HEIGHT//2-text_height//2-50, text_width + 100, text_height + 100)
-            info_box_outline = pygame.Rect(info_box.left-4, info_box.top-4, info_box.width+8, info_box.height+8)
-            pygame.draw.rect(win, WHITE, info_box_outline)
-            pygame.draw.rect(win, BLACK, info_box)
-            for i, text in enumerate(info_texts):
-                text_rect = text.get_rect(centerx = info_box.centerx, top=info_box.top + 50 + i * line_height)
-                win.blit(text, text_rect)
-            close_rect = self.draw_button(win, self.FONT2, 'X', info_box.right - 50, info_box.top +5, 50, 50, RED)
-            return None,None,None,close_rect 
-        return start_rect, back_rect, info_rect
 
-    def draw_delete_all_data(self, win,status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Delete All Player Data', 1, WHITE)
-        subtitle = self.FONT3.render('This will delete all player data. Are you sure?', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        action_rect = self.draw_button(win, self.FONT3, 'Delete All', 250, 240, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 240, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return action_rect, back_rect
-    
     def draw_saved_games(self, win, rows):
-        win.fill(BLACK)
-        title = self.FONT2.render("Saved Games",1,WHITE)
-        win.blit(title,(180,120))
+        win.fill(BACKGROUND)
+        self.clickable = []
+        box = pygame.Rect(120, 90, 560, 640)
+        pygame.draw.rect(win, PANEL, box, border_radius=10)
+        pygame.draw.rect(win, BORDER, box, 1, border_radius=10)
+        win.blit(self.FONT2.render('Saved games', True, OFF_WHITE), (152, 118))
+        self.scroll = min(self.scroll, max(0, len(rows) - self.ROWS_PER_PAGE))
+        first = self.scroll
+        last = min(len(rows), first + self.ROWS_PER_PAGE)
         buttons = []
-        y = 180
         if rows:
-            for row in rows:
-                text = self.FONT3.render(f"{row[0]}) {row[2]} vs {row[3]} | {row[1]}",1,WHITE)
-                game_rect = self.draw_button(win,self.FONT3,f"{row[0]}) {row[2]} vs {row[3]} | {row[1]}",180,y,text.get_width(),text.get_height())
-                buttons.append((game_rect,row[0]))
-                y += 30
+            win.blit(self.FONT4.render('Click a game to resume it.', True, MUTED_GRAY), (152, 166))
+            y = 214
+            for row in rows[first:last]:
+                row_rect = pygame.Rect(136, y, 528, self.ROW_HEIGHT - 4)
+                if row_rect.collidepoint(pygame.mouse.get_pos()):
+                    pygame.draw.rect(win, PANEL_LIGHT, row_rect, border_radius=6)
+                number = self.FONT4.render(f'#{row[0]}', True, MUTED_GRAY)
+                win.blit(number, number.get_rect(midleft=(row_rect.x + 16, row_rect.centery)))
+                players = self.FONT3.render(f'{row[2]}  vs  {row[3]}', True, OFF_WHITE)
+                win.blit(players, players.get_rect(midleft=(row_rect.x + 70, row_rect.centery)))
+                when = self.FONT4.render(str(row[1]), True, MUTED_GRAY)
+                win.blit(when, when.get_rect(midright=(row_rect.right - 16, row_rect.centery)))
+                buttons.append((row_rect, row[0]))
+                self.clickable.append(row_rect)
+                y += self.ROW_HEIGHT
         else:
-            msg = self.FONT3.render('No game data available.', 1, WHITE)
-            win.blit(msg, (180, 180))
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 300, 520, 120, 42)
+            message ='No saved games.'
+            text = self.FONT3.render(message, True, MUTED_GRAY)
+            win.blit(text, text.get_rect(center=(box.centerx, 340)))
+        back_rect = self.draw_button(win, 'Back', pygame.Rect(152, 668, 110, 44), 'muted')
+        if len(rows) > self.ROWS_PER_PAGE:
+            info = self.FONT4.render(f'{first + 1}-{last} of {len(rows)}  -  scroll for more', True, MUTED_GRAY)
+            win.blit(info, info.get_rect(midright=(648, back_rect.centery)))
         return buttons, back_rect
-    def draw_delete_game_data(self, win, input_text, input_active, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Delete game data', 1, WHITE)
-        subtitle = self.FONT3.render('Type the game id, then press Delete.', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        self.draw_text_input_box(win, self.FONT3, input_text, 220, 260, 360, 40, prompt='game id', active=input_active)
-        action_rect = self.draw_button(win, self.FONT3, 'Delete', 250, 340, 120, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 390, 340, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return action_rect, back_rect
-    def draw_delete_all_game_data(self, win, status_text):
-        win.fill(BLACK)
-        title = self.FONT2.render('Delete All game Data', 1, WHITE)
-        subtitle = self.FONT3.render('This will delete all game data. Are you sure?', 1, WHITE)
-        win.blit(title, (WIN_WIDTH//2-title.get_width()//2, 120))
-        win.blit(subtitle, (WIN_WIDTH//2-subtitle.get_width()//2, 170))
-        action_rect = self.draw_button(win, self.FONT3, 'Delete All', 250, 240, 150, 42)
-        back_rect = self.draw_button(win, self.FONT3, 'Back', 420, 240, 120, 42)
-        status = self.FONT3.render(status_text, 1, WHITE)
-        win.blit(status, (WIN_WIDTH//2-status.get_width()//2, 420))
-        return action_rect, back_rect

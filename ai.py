@@ -7,7 +7,7 @@ PHASE_TABLE = {'N':1,'B':1,'R':2,'Q':4,'-':0,'K':0,'P':0}
 HANGING_PIECE_PENALTY = {'P': 0.6,'N': 1.5,'B': 1.5,'R': 2.5,'Q': 5.0}
 CHECKMATE_SCORE = 1000
 STALEMATE_SCORE = 0
-DEPTH = 6
+DEPTH = 1
 MAX_PHASE = 24
 MAX_QUIESCENCE_DEPTH = 5
 ISOLATED_PAWN_PENALTY = 0.25
@@ -111,7 +111,9 @@ PIECE_SQUARE_TABLES = {
     'Q': QUEEN_TABLE,
     'P': PAWN_TABLE,
 }
-def choose_move(gamestate, valid_moves):
+def choose_move(gamestate, valid_moves, depth):
+    global DEPTH
+    DEPTH = depth if depth else 1
     # search_logger.debug(f"choose_move called with {len(valid_moves)} valid moves. checkmate={gamestate.checkmate} stalemate={gamestate.stalemate}")
     if not valid_moves:
         # search_logger.error("choose_move called with EMPTY valid_moves list — no legal move exists, but checkmate/stalemate not set?")

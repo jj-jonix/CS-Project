@@ -138,12 +138,14 @@ class Store:
                 time varchar(255) UNIQUE,
                 player1 varchar(255),
                 player2 varchar(255),
-                gamestate BLOB
+                gamestate BLOB,
+                wdiff varchar(10),
+                bdiff varchar(10)
                 )
         """)
         con.commit()
         con.close()
-    def save_game(self,player1,player2,gamestate):
+    def save_game(self,player1,player2,gamestate,wdiff,bdiff):
         game = pickle.dumps(gamestate)
         timezone = ZoneInfo("Asia/Kolkata")
         now = datetime.now(timezone)
@@ -151,7 +153,7 @@ class Store:
         con = self.connect()
         cursor = con.cursor()
         cursor.execute('use storage')
-        cursor.execute("insert into gamedata(time,player1,player2,gamestate) values(%s,%s,%s,%s )", (now.strftime("%d/%m/%y %H:%M:%S"),player1,player2,game))
+        cursor.execute("insert into gamedata(time,player1,player2,gamestate,wdiff,bdiff) values(%s,%s,%s,%s,%s,%s )", (now.strftime("%d/%m/%y %H:%M:%S"),player1,player2,game,wdiff,bdiff))
         con.commit()
         con.close()
     
@@ -161,7 +163,7 @@ class Store:
         cursor = con.cursor()
         cursor.execute("USE storage")
         cursor.execute("""
-            SELECT id, time, player1, player2
+            SELECT id, time, player1, player2,wdiff,bdiff
             FROM gamedata
             ORDER BY id ASC
         """)

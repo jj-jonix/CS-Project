@@ -1,4 +1,5 @@
 import pygame
+pygame.init()
 import random
 import logging
 from logging.handlers import RotatingFileHandler
@@ -76,3 +77,18 @@ def setup_logger(name, filename, level=logging.DEBUG):
     logger.addHandler(console)
 
     return logger
+
+BACKGROUND = (27, 26, 24)
+PANEL = (38, 36, 33)
+PANEL_LIGHT = (52, 49, 45)
+BORDER = (68, 64, 58)
+OFF_WHITE = (232, 228, 218)
+MUTED_GRAY = (146, 140, 129)
+GREEN = (129, 164, 92)
+LIGHT_GREEN = (150, 185, 112)
+SOFT_RED = (214, 96, 84)
+DARK_RED = (78, 44, 40)
+LIGHT_SQUARE = (238, 238, 210)
+DARK_SQUARE = (118, 150, 86)
+LAST_MOVE_COLOR = (245, 235, 90, 110)
+SELECTED_COLOR = (245, 235, 90, 170)

@@ -6,3 +6,5 @@ logs/
 stockfish/
 bridge.py
 bitboard.py
+OLDmain.py
+OLDmainMenu.py

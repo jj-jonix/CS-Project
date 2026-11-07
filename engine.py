@@ -157,7 +157,7 @@ class gameState:
 
             if move.is_en_passant:
                 self.material_count += PIECE_VALUE['P']
-            elif move.piece_captured != '--' and not move.is_pawn_promotion:
+            elif move.piece_captured != '--':
                 self.material_count += PIECE_VALUE.get(move.piece_captured[1],0)
             if move.is_pawn_promotion:
                 self.material_count -= PIECE_VALUE['Q'] - PIECE_VALUE['P']
@@ -195,9 +195,15 @@ class gameState:
                         if valid_square[0] == check_row and valid_square[1] == check_col:
                             break
                 for i in range(len(moves)-1,-1,-1):
-                    if moves[i].piece_moved[1] != 'K':
-                        if not (moves[i].end_row, moves[i].end_col) in valid_squares:
-                            moves.remove(moves[i])
+                    move = moves[i]
+                    if move.piece_moved[1] != 'K':                       
+                        end_square = (move.end_row, move.end_col)
+                        if move.is_en_passant:
+                            captured_square = (move.start_row, move.end_col)
+                            if captured_square not in valid_squares and end_square not in valid_squares:
+                                moves.remove(move)
+                        elif end_square not in valid_squares:
+                            moves.remove(move)
             else:
                 self.get_king_moves(king_row,king_col,moves)        
         else:
@@ -318,21 +324,23 @@ class gameState:
                     moves.append(Move((row, col),(row + move_amount, col - 1),board,pawn_promotion=pawn_promotion))
                 if (row+move_amount, col-1) == self.possible_en_passant:
                     attacking_piece = blocking_piece = False
+                    #below thing is so en pessant doesnt expose the king
                     if king_row == row:
-                        if king_col < col:
+                        if king_col < col:#king left of pawn
+                            #inside, between king and pawn,, outside, between pawn and border
                             inside_range = range(king_col+1,col-1)
                             outside_rage = range(col+1,8)
-                        else:
+                        else:#king right of pawn
                             inside_range = range(king_col-1,col,-1)
                             outside_rage = range(col-2,-1,-1)
                         for i in inside_range:
-                            if self.board[row][i] != '--':
+                            if self.board[row][i] != '--':#non empty square means smth is blocking beside en passant pawn
                                 blocking_piece = True
                         for i in outside_rage: 
                             square = self.board[row][i]
                             if square[0] == enemy_color and (square[1] == 'R' or square[1] == 'Q'):
                                 attacking_piece = True
-                            elif square[0] != '--':
+                            elif square != '--':
                                 blocking_piece = True
                     if not attacking_piece or blocking_piece:
                         moves.append(Move((row, col),(row + move_amount, col - 1),board,is_en_passant = True))
@@ -359,7 +367,7 @@ class gameState:
                             square = self.board[row][i]
                             if square[0] == enemy_color and (square[1] == 'R' or square[1] == 'Q'):
                                 attacking_piece = True
-                            elif square[0] != '--':
+                            elif square != '--':
                                 blocking_piece = True
                     if not attacking_piece or blocking_piece:
                         moves.append(Move((row, col),(row + move_amount, col + 1),board,is_en_passant = True))  
