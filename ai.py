@@ -263,7 +263,7 @@ def negamax_alpha_beta(gs,valid_moves,depth,alpha,beta, turn_multiplier):
     if gs.checkmate:
         return -(CHECKMATE_SCORE - (DEPTH_RUNTIME - depth))
     if gs.stalemate or gs.three_fold:
-        return CONTEMPT if gs.white_to_move else -CONTEMPT
+        return CONTEMPT
     if depth == 0:
         return quiescence_search(gs,valid_moves,alpha,beta,turn_multiplier)
     
@@ -438,7 +438,7 @@ def passed_pawn_bonus(board,phase):
                     break
             
             if is_passed:
-                rank_from_promotion = row if color == 'w' else 7 - row
+                rank_from_promotion = 7-row if color == 'w' else row
                 bonus = PASSED_PAWN_BONUS[rank_from_promotion] * end_game_weight
                 score += bonus if color == 'w' else -bonus
     return score
