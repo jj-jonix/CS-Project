@@ -1,4 +1,3 @@
-import random
 from globals import setup_logger
 search_logger = setup_logger('search', 'search.log')
 

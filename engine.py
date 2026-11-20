@@ -580,8 +580,6 @@ class Move:
             return False
 
 
-
-
     def get_chess_notation(self):
         return self.get_rank_file(self.start_row, self.start_col) + self.get_rank_file(self.end_row, self.end_col)
 
