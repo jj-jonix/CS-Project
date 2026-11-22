@@ -113,28 +113,14 @@ PIECE_SQUARE_TABLES = {
 def choose_move(gamestate, valid_moves, depth):
     global DEPTH
     DEPTH = depth if depth else 1
-    # search_logger.debug(f"choose_move called with {len(valid_moves)} valid moves. checkmate={gamestate.checkmate} stalemate={gamestate.stalemate}")
+    search_logger.debug(f"choose_move called with {len(valid_moves)} valid moves. checkmate={gamestate.checkmate} stalemate={gamestate.stalemate}")
     if not valid_moves:
-        # search_logger.error("choose_move called with EMPTY valid_moves list — no legal move exists, but checkmate/stalemate not set?")
+        search_logger.error("choose_move called with EMPTY valid_moves list — no legal move exists, but checkmate/stalemate not set?")
         return None
     return call_negamax(gamestate,valid_moves)
 
 
 def evaluate(gamestate, full = True):
-    #static evaluation function, looks at the  board and gives a score based on the current position taking into account the material
-    # of black and white, also takes into account the phase of the game to give different score based on if its end game or mid game
-    # or early game
-    # 1) king proximity function encourages the kings to move close to each other because it helps achieve a stronger position
-    # 2) pawn structure penalty removes score(for white) and adds score(for blackk) based on if the pawn is isolated(like the pawn dont have a pawn
-    # on its left or right) and double pawn penalty if a column has 2 pawns of same color.
-    # 3) passed pawn bonus gives a bonus based on how close the pawn is to promoting
-    # 4) king safety rewards when king is safe like behind pawns and stuff when game phase is high that means it is in early game and king table
-    # mid game encourages king to castle and play it safe, end game encourages to take more space and help other pieces
-    # 5) bishop pair bonus gives a small bonus if both bishiops are alive
-    # 6) rook open file bonus gives a bonus if the rook is on an open file
-    # 7) adds or subtracts from the evaluation score based on who has more moves
-    # 8) hanging piece penalty penalizes if any piece is left hanging and can get captured without repercusions
-    # full parameter is to ignore mobility and hanging piece penalty when doing quinscience search as it is taxing and this saves time 
     if gamestate.checkmate:
         return - CHECKMATE_SCORE if gamestate.white_to_move else CHECKMATE_SCORE
     if gamestate.stalemate or gamestate.three_fold:
@@ -198,13 +184,6 @@ def evaluate(gamestate, full = True):
     return score
 
 def call_negamax(gs, valid_moves):
-    # calls negamax algorithem 
-    # usees iterative deepening which provides good move ordering and saves time in the long run
-    #   searches at depth 1 then 2 then 3 .. untill max deapth is reached 
-    # uses aspiration window which narrows down the alpha beta window to save some time
-    #   cuz the search score doesnt really change that much betweeen searches it narrows down the search window ie alpha beta value to around the search score
-    #   so that the next search window is smaller and it is much faster than seraching full +1000 and -1000 window
-    #   and if the new window is not big enough the window is expanded
     KILLER_MOVES.clear()
     HISTORY_HEURISTIC.clear()
     global next_move
@@ -239,7 +218,7 @@ def call_negamax(gs, valid_moves):
         if next_move is not None:
             best_move = next_move
         else:
-            #this is a safeguard incase the thing ever crashes or something goes wrong and it returns best move as none
+            #safeguard so that best move is not none in any case 
             key = gs.zobrist_key
             entry = TRANSPOSITION_TABLE.get(key)
             if entry and entry[3] is not None:
@@ -249,15 +228,7 @@ def call_negamax(gs, valid_moves):
  
 
 def negamax_alpha_beta(gs,valid_moves,depth,alpha,beta, turn_multiplier):
-    # this is the main search algorithm, nagamax is a different way of writing the code but the core logic is the same as minmax algorithem
-    # it uses alpha beta pruining
-    #   basically alpha is the max value that the maximising player can get and beta is the lowest possible value the minimising player can get
-    # it also uses a few things to imrpove the search time and make it faster
-    #1) transpositon table
-    #2) move ordering
-    #3) late move reduction which searches the quite moves ie the moves which are not capture moves or pawn promotion move at a reduced deapth and 
-    #   searches them at full depth if they give unexpectedly good score
-    #4) killer moves and history heuristic are jus to improve move ordering
+
     global next_move
     if gs.checkmate:
         return -(CHECKMATE_SCORE - (DEPTH_RUNTIME - depth))
@@ -310,12 +281,6 @@ def negamax_alpha_beta(gs,valid_moves,depth,alpha,beta, turn_multiplier):
     return max_score
 
 def order_moves(valid_moves, tt_move = None, killers = None, history = None):
-    # orders moves based on:
-    #1) best moves from transposition table
-    #2) capture moves and promotions
-    #3) killer moves
-    #4) history heuristic
-    #5) all remaining moves
     moves = []
     for move in valid_moves:
         score = 0
@@ -511,7 +476,6 @@ def mobility_score(white_moves, black_moves):
     return (len(white_moves) - len(black_moves)) * MOBILITY_WEIGHT
 
 def store_killer_move(move,depth):
-    #stores non capture moves that caused a beta cutoff
     if move.piece_captured != '--':
         return
     move_at_depth = KILLER_MOVES.setdefault(depth,[])
@@ -521,15 +485,11 @@ def store_killer_move(move,depth):
             move_at_depth.pop()
 
 def update_history(move,depth):
-    # stores good moves and gives them  a score based on depth to improve move ordering 
     key = (move.start_row, move.start_col, move.end_row, move.end_col)
     HISTORY_HEURISTIC[key] = HISTORY_HEURISTIC.get(key, 0) + depth * depth
 
 
 def tt_store(key,depth,score,flag,best_move,ply):
-    #stores the moves in transposition table
-    #it stores the move depth,score,flag(upper if the score could have been lower, lower if it could have been higher and exact if its between alpha and beta)
-    #and best move, score is also adjusted if its a mate so engine prefferes faster mates
     old = TRANSPOSITION_TABLE.get(key)
     if score >= MATE_THRESHOLD:
         score += ply
@@ -540,9 +500,6 @@ def tt_store(key,depth,score,flag,best_move,ply):
 
 
 def tt_find(key,depth,alpha,beta,ply):
-    #looks for the current position in transposition table and if its found
-    #adjusts the score according to the current ply if the score in tt passes mate thresold
-    #and returns the score and move based on flag and current alpha and beta value, or it jus returns the best move if the score is not usable
     entry = TRANSPOSITION_TABLE.get(key)
     if entry == None:
         return None,None
@@ -565,7 +522,7 @@ def tt_find(key,depth,alpha,beta,ply):
 
 
 def mvv_lva_score(move):
-    #most valuable victem, least valuable attacker,  used for move ordering
+    #most valuable victem least valuable attacker for move ordering
     if move.piece_captured != '--':
         victem = PIECE_VALUE[move.piece_captured[1]]
         attacker = PIECE_VALUE[move.piece_moved[1]]

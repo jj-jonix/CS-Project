@@ -14,6 +14,7 @@ DETAILS = {
     'password': '123456789'
 }
 
+
 ai_thread = None
 ai_lock = threading.Lock()
 pending_cpu_move = None
@@ -22,6 +23,8 @@ game_number = 0
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Chess")
 
+
+#images
 for piece in ['wP','wR','wN','wB','wQ','wK','bP','bR','bN','bB','bQ','bK']:
     IMAGES[piece] = pygame.transform.smoothscale(pygame.image.load(f'src/{piece}.png').convert_alpha(), (SQUARE_SIZE, SQUARE_SIZE))
 icon_size = PADDING - 5
@@ -36,6 +39,7 @@ save_image_rect = save_image.get_rect(center = (PADDING//2, WIN_HEIGHT//2))
 ingame_icons = [('black resign', black_resign_image_rect, black_resign_image, 'Resign as Black'),('white resign', white_resign_image_rect, white_resign_image, 'Resign as White'),
                 ('draw', draw_image_rect, draw_image, 'Agree a draw'),('save', save_image_rect, save_image, 'Save game')]
 
+#move highlighting colors
 last_move_surface = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA)
 last_move_surface.fill(LAST_MOVE_COLOR)
 selected_surface = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA)
@@ -45,6 +49,7 @@ pygame.draw.circle(dot_surface, (20, 20, 20, 60), (SQUARE_SIZE//2, SQUARE_SIZE//
 capture_surface = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE), pygame.SRCALPHA)
 pygame.draw.circle(capture_surface, (20, 20, 20, 60), (SQUARE_SIZE//2, SQUARE_SIZE//2), SQUARE_SIZE//2 - 2, 7)
 coord_font = pygame.font.SysFont('segoeui,helvetica,arial', 15, bold=True)
+
 
 BACK_PAGES = {'data menu':'main menu','modify data':'main menu','load game':'main menu','play':'main menu','view all data':'data menu','view specific data':'data menu','add data':'modify data',
               'delete data':'modify data','change data':'modify data','delete game data':'modify data','delete all data':'modify data','delete all game data':'modify data','edit player stats':'change data'}
